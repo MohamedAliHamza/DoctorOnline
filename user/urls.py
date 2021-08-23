@@ -11,5 +11,5 @@ urlpatterns = [
        path('login-patient/', views.PatientTokenView.as_view(), name='token_obtain_pair_patient'),
 
        # URL For Update
-       path('update/', views.UpdateUserView.as_view(), name='update'),       
+       path('update_info/', views.UpdateUserView.as_view(), name='update'),       
 ]
