@@ -4,9 +4,9 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns = [
     # Apps URL
-    path('api/v1/', include('user.urls')),
-    path('api/v1/', include('clinic.urls')),
-    path('api/v1/', include('reservation.urls')),
+    path('user/', include('user.urls')),
+    path('clinic/', include('clinic.urls')),
+    path('reservation/', include('reservation.urls')),
     path('admin/', admin.site.urls),
     
     # Docs URL
