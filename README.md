@@ -1,4 +1,4 @@
-# DoctorOnline Reservation System
+# Doctor Online Reservation System
  <img src="https://img.icons8.com/office/16/000000/booking.png"/> This is a reservation system API based on Django & Django REST Framework where the patient can reserve an appointment with a specific doctor.
  
  ## Setup & Launch
