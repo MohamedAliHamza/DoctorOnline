@@ -8,7 +8,7 @@ class UserSerializer(serializers.Serializer):
        password = serializers.CharField(min_length=5, write_only=True, required=True)
        type = serializers.ChoiceField(choices=User.user_types) 
        mobile = serializers.CharField(max_length=11, required=False)
-       full_name = serializers.CharField(max_length=11, required=False)
+       full_name = serializers.CharField(max_length=25, required=False)
  
        def create(self, validated_data):
               password = validated_data.pop('password', None)
@@ -32,7 +32,7 @@ class UserUpdateSerializer(serializers.Serializer):
        old_password = serializers.CharField(write_only=True, required=False)
        new_password = serializers.CharField(min_length=5, write_only=True, required=False)
        mobile = serializers.CharField(max_length=11, required=False)
-       full_name = serializers.CharField(max_length=11, required=False)
+       full_name = serializers.CharField(max_length=25, required=False)
 
        def validate(self, attrs):
               user = self.context['request'].user
@@ -49,15 +49,16 @@ class UserUpdateSerializer(serializers.Serializer):
               instance.email = validated_data.get('email', instance.email)
               instance.mobile = validated_data.get('mobile', instance.mobile)
               instance.full_name = validated_data.get('full_name', instance.full_name)
+              instance.password = validated_data.get('new_password', instance.password)
               instance.save()
               return instance       
 
-       def save(self, **kwargs):
-              password = self.validated_data['new_password']
-              user = self.context['request'].user
-              user.set_password(password)
-              user.save()
-              return user
+       # def save(self, **kwargs):
+       #        password = self.validated_data['new_password']
+       #        user = self.context['request'].user
+       #        user.set_password(password)
+       #        user.save()
+       #        return user
               
 class DoctorTokenSerializer(TokenObtainPairSerializer):
     ''' Token Doctor Serializer ''' 
