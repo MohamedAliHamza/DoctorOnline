@@ -1,17 +1,17 @@
+from clinic.serializers import ClinicSerializers
 from user.models import User, Doctor, Patient
 from rest_framework.test import APIClient
 from mixer.backend.django import mixer
 from rest_framework import status
+from clinic.models import Clinic
 from django.urls import reverse
 import pytest
-from clinic.serializers import ClinicSerializers
-from clinic.models import Clinic
 
 client = APIClient()
 client2 = APIClient()
 client3 = APIClient()
 
-# Test -> add clinic -> get all clinics -> update clinic -> delete clinic -> get doctor's clinic
+# Test -> add clinic -> get all clinics -> update clinic -> delete clinic -> get doctor's clinic 
 
 @pytest.mark.django_db
 class TestClinic:
