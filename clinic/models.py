@@ -13,4 +13,4 @@ class Clinic(TimeStampedModel):
        date = models.ManyToManyField(ClinicDate, related_name='clinic_date')
 
        def __str__(self):
-              return self.name
+              return str(self.id)

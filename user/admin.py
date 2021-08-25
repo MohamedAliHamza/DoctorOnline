@@ -9,7 +9,7 @@ class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
     list_display = ['email', 'mobile','full_name', 'type']
-    readonly_fields = ['email', 'mobile','full_name', 'type', 'address']
+    readonly_fields = ['email', 'mobile','full_name', 'address']
     list_filter = []
     list_editable = []
     ordering = []
