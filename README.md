@@ -69,3 +69,17 @@
 
 * The Third Step To Access API :
     * Add ` "access":..... ` jwtAuth (http, Bearer)
+
+___
+
+## Doctor Domin : 
+   * Register
+   * Log in
+   * Add Clinic
+ 
+ 
+## Patient Domin : 
+   * Register
+   * Log in
+   * Make Reservation
+    
