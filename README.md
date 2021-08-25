@@ -75,11 +75,16 @@ ___
 ## Doctor Domin : 
    * Register
    * Log in
-   * Add Clinic
+   * Update Account Info
+   * Add Clinic `CRUD`
+   * Get His Reservation
+   * Get All Clinics
  
  
 ## Patient Domin : 
    * Register
    * Log in
-   * Make Reservation
-    
+   * Update Account Info
+   * Make Reservation `CRUD`
+   * Get His Reservation
+   * Get All Clinics
