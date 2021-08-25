@@ -23,3 +23,49 @@
 ```
  http://127.0.0.1:8000/api/v1/docs/
 ```
+* The First Step To Access API :
+
+    * ` Register ` As A Doctor :
+
+        ```json
+        URL: http://127.0.0.1:8000/api/v1/docs/#/user/user_register_create
+        {
+           "email": "doctor1@doctoronline.com",
+           "password": "12345",
+           "type": "DOCTOR"
+       }
+        ```   
+    * ` Register ` As A Patient :
+
+        ```json
+        URL: http://127.0.0.1:8000/api/v1/docs/#/user/user_register_create
+        {
+           "email": "patient1@doctoronline.com",
+           "password": "12345",
+           "type": "PATIENT"
+       }
+        ```     
+
+* The Second Step To Access API :
+
+    * ` Log in ` As A Doctor :
+
+        ```json
+        URL: http://127.0.0.1:8000/api/v1/docs/#/user/user_login_doctor_create
+        {
+           "email": "doctor1@doctoronline.com",
+           "password": "12345"
+       }
+        ```   
+    * ` Log in ` As A Patient :
+
+        ```json
+        URL: http://127.0.0.1:8000/api/v1/docs/#/user/user_login_patient_create
+        {
+           "email": "patient1@doctoronline.com",
+           "password": "12345"
+       }
+        ```     
+
+* The Third Step To Access API :
+    * Add ` "access":..... ` jwtAuth (http, Bearer)
