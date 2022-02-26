@@ -4,7 +4,7 @@ from mixer.backend.django import mixer
 from rest_framework import status
 from django.urls import reverse
 import pytest
-from user.serializer import UserSerializer, UserUpdateSerializer
+from user.api.serializers import UserSerializer, UserUpdateSerializer
 
 client = APIClient()
 client2 = APIClient()
