@@ -18,4 +18,4 @@ urlpatterns = [
     path('login/', TokenObtainPairView.as_view(), name='login'),
 
     path('users/', include(user_patterns)),
-]    
+]
