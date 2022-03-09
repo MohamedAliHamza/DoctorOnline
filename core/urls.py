@@ -1,16 +1,18 @@
-from django.contrib import admin
+from django.conf.urls.static import static
 from django.urls import path, include
-from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from django.conf import settings
+from django.contrib import admin
+
+
+# apps_patterns = [
+#     # User
+#     path('', include('user.api.urls')),
+    
+
+# ]
 
 urlpatterns = [
-    # Apps URL
-    path('user/', include('user.urls')),
-    path('clinic/', include('clinic.urls')),
-    path('reservation/', include('reservation.urls')),
-    path('admin/', admin.site.urls),
+    path('', include('user.urls')),
     
-    # Docs URL
-    path('api/v1/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-    path('api/v1/schema/', SpectacularAPIView.as_view(), name='schema'),
-
-]
+    path('admin/', admin.site.urls),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,9 +1,9 @@
-from clinic.serializers import ClinicSerializers
+from specialty.serializers import ClinicSerializers
 from user.models import User, Doctor, Patient
 from rest_framework.test import APIClient
 from mixer.backend.django import mixer
 from rest_framework import status
-from clinic.models import Clinic
+from specialty.models import Clinic
 from django.urls import reverse
 import pytest
 

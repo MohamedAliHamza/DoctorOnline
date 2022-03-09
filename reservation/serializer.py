@@ -1,11 +1,11 @@
-from clinic.serializers import ClinicSerializers
+from specialty.serializers import ClinicSerializers
 from django.shortcuts import get_object_or_404
-from user.serializer import UserSerializer
+from user.api.serializers import UserSerializer
 from rest_framework import serializers
-from clinic.models import Clinic
+from specialty.models import Clinic
 from .models import Reservation
 from user.models import User
-from utilities.utility import choice_day
+from utility.utility import choice_day
 
 class ReservationSerializer(serializers.Serializer):
        patient = serializers.StringRelatedField(read_only=True)

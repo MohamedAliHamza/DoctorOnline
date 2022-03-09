@@ -25,16 +25,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     # Inner apps
     'user',
-    'clinic',
-    'reservation',
-    'utilities',
+    'doctor',
+    'patient',
+    'report',
+    'utility',
+    'specialty',
+
     # 3rd party apps
     'rest_framework',
     'phonenumber_field',
     'rest_framework_simplejwt',
-    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -52,7 +55,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -139,12 +142,6 @@ REST_FRAMEWORK = {
 # JWT Settings 
 from datetime import timedelta
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-}
-
-SPECTACULAR_SETTINGS = {
-    'TITLE': 'API Swagger Docs',
-    'DESCRIPTION': 'DoctorOnline Task',
-    'VERSION': '1.0.0',
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=10),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=10),
 }

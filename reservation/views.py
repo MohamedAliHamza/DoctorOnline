@@ -1,10 +1,10 @@
 from rest_framework import generics
 from .models import Reservation
 from .serializer import ReservationSerializer
-from utilities.permissions import IsDoctor, IsOwnerReservation, IsPatient
+from utility.permissions import IsDoctor, IsOwnerReservation, IsPatient
 from rest_framework.permissions import IsAuthenticated
 from user.models import User
-from clinic.models import Clinic
+from specialty.models import Clinic
 
 class CreateReservationView(generics.CreateAPIView):
        serializer_class = ReservationSerializer

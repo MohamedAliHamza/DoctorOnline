@@ -1,7 +1,7 @@
 from django.db import models
 from user.models import User
-from utilities.models import DateModel
-from clinic.models import Clinic
+from utility.models import DateModel
+from specialty.models import Clinic
 
 class Reservation(DateModel):
        patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='patient_reservation')
