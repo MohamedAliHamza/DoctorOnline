@@ -9,9 +9,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=150, unique=True)   
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
     is_patient = models.BooleanField(default=False)
     is_doctor = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
 
     objects = UserManager()
 
@@ -20,8 +20,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = []
 
     def __str__(self) -> str:
-        return self.email
+        return f'{self.email} : {self.id}'
 
     class Meta:
         verbose_name = 'User'
         verbose_name_plural = 'Users'
+        

@@ -1,7 +1,7 @@
 from rest_framework.permissions import BasePermission
 
 
-denial_message = 'You do not have permission to perform this action'
+denial_message = "You do not have permission to perform this action"
 
 
 class IsSuperuser(BasePermission):
@@ -31,4 +31,10 @@ class IsDoctor(BasePermission):
     def has_permission(self, request, view):
         return request.user.is_doctor
 
+
+class IsActive(BasePermission):
+    message = "This account is inactive"
+
+    def has_permission(self, request, view):
+        return request.user.is_active
 

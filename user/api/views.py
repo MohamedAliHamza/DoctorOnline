@@ -1,57 +1,53 @@
+from django.contrib.auth import authenticate
+
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import status, serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
 
-from .serializers import CreateUserSerializer, UpdateUserSerializer, DetailUserSerializer
-from .utils import create_user, update_user
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from .serializers import LoginUserSerializer
 
 
-class CreatePatientApi(APIView):
-    
+# class DetailUserApi(APIView):
+
+#     permission_classes = [
+#         IsAuthenticated,
+#         ]
+
+#     def get(self, request): 
+#         user = request.user
+#         data = None
+#         if user.is_customer:
+#             data = CompanySerializer(user.company).data
+#         else:
+#             ...
+#             # data = AdminSerializer(user.profile).data
+
+#         return Response(data, status=status.HTTP_200_OK)   
+
+
+class LoginUserApi(APIView):
+
     def post(self, request):
-        serializer = CreateUserSerializer(data=request.data)
+        serializer = LoginUserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        data = serializer.validated_data
+        user = authenticate(email=request.data['email'].lower(), password=request.data['password'])
+        if not user:
+            raise serializers.ValidationError({'detail':'Incorrect email or password'})
 
-        create_user(
-            data['email'].lower(),
-            data['password'],
-            data['confirm_password'],
-            full_name=data['full_name'],
-            is_patient=True,
-            )
+        # Generate Token
+        refresh = RefreshToken.for_user(user)
 
-        return Response(status=status.HTTP_201_CREATED)
+        data = None
+        # if user.is_company:
+        #     data = CompanySerializer(user.company).data
+        # else:
+        #     ...
+        #     # data = AdminSerializer(user.profile).data
 
+        # data['refresh'], data['access'] = str(refresh), str(refresh.access_token)    
 
-class UpdateUserApi(APIView):
-
-    permission_classes = [
-        IsAuthenticated,
-        ]
-    
-    def put(self, request):
-        serializer = UpdateUserSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        data = serializer.validated_data
-
-        if data:
-            update_user(request.user, **data)
-
-        return Response(status=status.HTTP_200_OK)
-
-
-class DetailUserApi(APIView):
-    permission_classes = [
-        IsAuthenticated,
-        ]
-
-    def get(self, request): 
-        user = request.user
-        user_data = DetailUserSerializer(user).data
-
-        return Response(user_data)
-        
+        return Response(data, status=status.HTTP_200_OK)

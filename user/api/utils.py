@@ -1,56 +1,55 @@
-from utility.utils import object_exist
+from typing import Optional
+
+from rest_framework import serializers
 
 from ..models import User
-from .exceptions import(
-    PasswordNotMatch,
-    WrongPassword,
-    UserExist, 
-    )
+
+from common.utils import _object_exist
 
 
-def create_user(email, password, confirm_password, **kwargs):
-
-    # Check unique email
-    if object_exist(User, email=email):
-        raise UserExist()
-
-    # Check valid password    
-    if password != confirm_password:
-        raise PasswordNotMatch()
-
-    user = User.objects.create_user(email, password, **kwargs)
-
-    return user
+def _clean_email(email: str):
+    if _object_exist(User, email=email):
+            raise serializers.ValidationError({'detail':'This email already exists'})
+    ...
 
 
-def update_user(user, **kwargs):
-    
-    if 'email' in kwargs:
-        email = kwargs['email'].lower()
-        if object_exist(User, email=email):
-            raise UserExist()
-        user.email = email
+def _clean_password_match(password_1: str, password_2: str):
+    if password_1 != password_2:
+            raise serializers.ValidationError({'detail':'Passwords do not match'})
+    ...
 
-    if 'old_password' in kwargs and not user.check_password(kwargs['old_password']):
-        raise WrongPassword()
 
-    if 'new_password' in kwargs and not 'old_password' in kwargs:
-        raise PasswordNotMatch()
+def _clean_old_password(user: User, old_password: str):
+    if not user.check_password(old_password):
+            raise serializers.ValidationError({'detail':'Incorrect Old Password'})
+    ...
 
-    elif not 'new_password' in kwargs and 'old_password' in kwargs:
-        raise PasswordNotMatch()    
 
-    elif 'new_password' and 'old_password' in kwargs:
-        user.set_password(kwargs['new_password'])
-        kwargs.pop('old_password')
-        kwargs.pop('new_password')
-        kwargs['password'] = ''
-        
-    user.avatar = kwargs.get('avatar')
-    user.full_name = kwargs.get('full_name')
-    kwargs['updated_at'] = ''
+def _create_user(email: str, password_1: str, password_2: str, **kwargs):
+    email = email.lower()
+    # Validate
+    _clean_email(email)
+    _clean_password_match(password_1, password_2)
 
-    # Call the save method to update only a provided data
-    user.save(update_fields=[field for field in kwargs.keys()])
+    # Create
+    user = User.objects.create_user( email, password_1, **kwargs)
 
     return user
+
+
+def _update_user(user: User, email: Optional[str] = None, password_1: Optional[str] = None, password_2: Optional[str] = None):
+
+    user_fields = []
+
+    # Validate
+    if email != None:
+        email = email.lower()
+        _clean_email(email)
+        user_fields.append('email')
+
+    if password_1 != None:
+        _clean_old_password(user, password_1)
+        user.set_password(password_2)
+        user_fields.append('password')
+
+    return user_fields

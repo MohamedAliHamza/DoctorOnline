@@ -1,86 +1,72 @@
 from django.db.models import Q
 
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from ..serializers import CreateUserSerializer, DetailUserSerializer
+from .serializers import CreateAdminSerializer, UpdateAdminSerializer, AdminSerializer
+from ..serializers import CustomerSerializer, PasswordSerializer
+from ..utils import _create_user, _update_user
 from ..permissions import IsSuperuser, IsStaff
-from ..utils import create_user
-from ...models import User
+from ...models import UserProfile
 
 
 class CreateAdminApi(APIView):
-    ''' Add new admin user endpoint, availbale only for admin user '''
+    ''' Add new staff or superuser, availbale only for superuser '''
 
     permission_classes = [
         IsAuthenticated,
-        IsSuperuser | IsStaff
+        IsSuperuser,
         ]
 
     def post(self, request):
-        serializer = CreateUserSerializer(data=request.data)
+        serializer = CreateAdminSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
         data = serializer.validated_data
 
-        create_user(
-            data['email'].lower(),
-            data['password'],
-            data['confirm_password'],
-            full_name=data['full_name'],
-            is_staff=True,
-            )
-       
+        user_object = _create_user(data['email'], data['name'], data['password'], data['confirm_password'], is_staff=True, is_superuser=data.get('is_superuser'))
 
-        return Response(status=status.HTTP_201_CREATED)
+        data = AdminSerializer(user_object[1]).data
+
+        return Response(data, status=status.HTTP_201_CREATED)
 
 
-class CreateDoctorApi(APIView):
-    ''' Add new doctor endpoint, availbale only for admin user '''
+class UpdateAdminApi(APIView):
+    ''' update admin info for superuser '''
 
     permission_classes = [
         IsAuthenticated,
-        IsSuperuser | IsStaff
+        IsSuperuser
         ]
-
-    def post(self, request):
-        serializer = CreateUserSerializer(data=request.data)
+    
+    def put(self, request):
+        serializer = UpdateAdminSerializer(data=request.data)
+        password_serializer = None
         serializer.is_valid(raise_exception=True)
-
         data = serializer.validated_data
 
-        create_user(
-            data['email'].lower(),
-            data['password'],
-            data['confirm_password'],
-            full_name=data['full_name'],
-            is_doctor=True,
-            )
+        if 'password' in request.data or 'confirm_password' in request.data:
+            password_serializer = PasswordSerializer(data=request.data)
+            password_serializer.is_valid(raise_exception=True)
 
-        return Response(status=status.HTTP_201_CREATED)
+            data['password'] = password_serializer.validated_data['password']
+            data['confirm_password'] = password_serializer.validated_data['confirm_password']
 
+        try:
+            profile = UserProfile.objects.select_related('user').get(
+                (Q(user__is_staff=True) | Q(user__is_superuser=True)) & 
+                Q(id=data.pop('admin_id')))
+            user_object = _update_user(request.user, profile, **data)
+            data = AdminSerializer(user_object[1]).data 
+            return Response(data, status=status.HTTP_200_OK)
 
-class ListAdminApi(APIView):
-    ''' List admin endpoint for admin '''
-
-    permission_classes = [
-        IsAuthenticated,
-        IsSuperuser | IsStaff
-        ]
-
-    def get(self, request):
-
-        admins = User.objects.filter(Q(is_superuser=True) | Q(is_staff=True))
-
-        admins_data = DetailUserSerializer(admins, many=True).data
-
-        return Response(admins_data)
+        except UserProfile.DoesNotExist:
+            return Response({'detail':'This admin does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
 
-class ListPatientApi(APIView):
-    ''' List patients endpoint for admin '''
+class ListAdminApi(APIView, LimitOffsetPagination):
 
     permission_classes = [
         IsAuthenticated,
@@ -89,15 +75,16 @@ class ListPatientApi(APIView):
 
     def get(self, request):
 
-        patients = User.objects.filter(is_patient=True)
+        admins = UserProfile.objects.filter(Q(user__is_superuser=True) | Q(user__is_staff=True)).select_related('user')
 
-        patients_data = DetailUserSerializer(patients, many=True).data
+        results = self.paginate_queryset(admins, request, view=self)
 
-        return Response(patients_data)
+        serializer = AdminSerializer(results, many=True)
+
+        return self.get_paginated_response(serializer.data)
 
 
-class ListDoctorApi(APIView):
-    ''' List doctors endpoint for admin '''
+class ListCustomerApi(APIView, LimitOffsetPagination):
 
     permission_classes = [
         IsAuthenticated,
@@ -106,9 +93,10 @@ class ListDoctorApi(APIView):
 
     def get(self, request):
 
-        doctors = User.objects.filter(is_doctor=True)
+        customers = UserProfile.objects.filter(user__is_customer=True).select_related('user')
 
-        doctors_data = DetailUserSerializer(doctors, many=True).data
+        results = self.paginate_queryset(customers, request, view=self)
 
-        return Response(doctors_data)
+        serializer = CustomerSerializer(results, many=True)
 
+        return self.get_paginated_response(serializer.data)

@@ -4,15 +4,12 @@ from django.conf import settings
 from django.contrib import admin
 
 
-# apps_patterns = [
-#     # User
-#     path('', include('user.api.urls')),
-    
-
-# ]
-
 urlpatterns = [
-    path('', include('user.urls')),
+    # path('reservation/', include('reservation.urls')),
+    # path('', include('user.urls')),
+    # path('', include('patient.urls')),
+    # path('', include('utility.urls')),
     
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls,),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

@@ -1,9 +1,8 @@
 from django.db import models
 
-from utility.models import TimeStamp
-from doctor.models import Doctor
+from common.models import TimeStamp
 from patient.models import Patient
-
+from doctor.models import Doctor
 
 class Report(TimeStamp):
     doctor = models.ForeignKey(Doctor, on_delete=models.SET_NULL, null=True)
@@ -17,4 +16,3 @@ class Report(TimeStamp):
         verbose_name = 'Report'
         verbose_name_plural = 'Reports'
         ordering = ['-created_at']
-

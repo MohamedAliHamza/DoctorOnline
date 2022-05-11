@@ -1,27 +1,65 @@
-from rest_framework import generics
-from .models import Reservation
-from .serializer import ReservationSerializer
-from utility.permissions import IsDoctor, IsOwnerReservation, IsPatient
-from rest_framework.permissions import IsAuthenticated
-from user.models import User
-from specialty.models import Clinic
+from django.shortcuts import render
+from django.http import JsonResponse
+import random
+import time
+from agora_token_builder import RtcTokenBuilder
+from .models import RoomMember
+import json
+from django.views.decorators.csrf import csrf_exempt
 
-class CreateReservationView(generics.CreateAPIView):
-       serializer_class = ReservationSerializer
-       permission_classes = [IsAuthenticated, IsPatient]
 
-class ListReservationView(generics.ListAPIView):
-       serializer_class = ReservationSerializer
-       permission_classes = [IsAuthenticated]
+def lobby(request):
+    return render(request, 'reservation/lobby.html')
 
-       def get_queryset(self):
-              user = self.request.user
-              if user.type == User.PATIENT:
-                     return user.patient_reservation.all()
-              if user.type == User.DOCTOR:
-                     return user.doctor_reservation.all()
+def room(request):
+    return render(request, 'reservation/room.html')
 
-class UpdateDeleteReservationView(generics.RetrieveUpdateDestroyAPIView):
-       serializer_class = ReservationSerializer
-       permission_classes = [IsAuthenticated, IsOwnerReservation]
-       queryset = Reservation.objects.all()
+
+def getToken(request):
+    appId = "8eee40ec6f7f44648292b9311a8394c0"
+    appCertificate = "00ac0dcd783f4eeba31538fc235d1083"
+    channelName = request.GET.get('channel')
+    uid = random.randint(1, 230)
+    expirationTimeInSeconds = 3600
+    currentTimeStamp = int(time.time())
+    privilegeExpiredTs = currentTimeStamp + expirationTimeInSeconds
+    role = 1
+
+    token = RtcTokenBuilder.buildTokenWithUid(appId, appCertificate, channelName, uid, role, privilegeExpiredTs)
+
+    return JsonResponse({'token': token, 'uid': uid}, safe=False)
+
+
+@csrf_exempt
+def createMember(request):
+    data = json.loads(request.body)
+    member, created = RoomMember.objects.get_or_create(
+        name=data['name'],
+        uid=data['UID'],
+        room_name=data['room_name']
+    )
+
+    return JsonResponse({'name':data['name']}, safe=False)
+
+
+def getMember(request):
+    uid = request.GET.get('UID')
+    room_name = request.GET.get('room_name')
+
+    member = RoomMember.objects.get(
+        uid=uid,
+        room_name=room_name,
+    )
+    name = member.name
+    return JsonResponse({'name':member.name}, safe=False)
+
+@csrf_exempt
+def deleteMember(request):
+    data = json.loads(request.body)
+    member = RoomMember.objects.get(
+        name=data['name'],
+        uid=data['UID'],
+        room_name=data['room_name']
+       )
+    member.delete()
+    return JsonResponse('Member deleted', safe=False)

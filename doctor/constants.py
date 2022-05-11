@@ -9,11 +9,11 @@ class Day:
     THURSDAY = 5
 
 
-Day_CHOICES = (
+Day_CHOICES = [
     (Day.SATUARDAY, 'Saturday'),
     (Day.SUNDAY, 'Sunday'),
     (Day.MONDAY, 'Monday'),
     (Day.TUESDAY, 'Tuesday'),
     (Day.WEDNESDAY, 'Wednesday'),
     (Day.THURSDAY, 'Thursday'),
-)
+]
