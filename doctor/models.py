@@ -9,14 +9,19 @@ from user.models import User
 
 
 class Doctor(TimeStamp):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='doctor')
     full_name = models.CharField(max_length=120)
     avatar = models.ImageField(upload_to='doctors/avatar/', default='doctors/avatar/default.png')
-    background_image = models.ImageField(upload_to='doctors/background.', default='doctors/background/default.png')
+    background_image = models.ImageField(upload_to='doctors/background', default='doctors/background/default.png')
     bio = models.TextField(max_length=800)
-    fees = models.FloatField()
+    fees = models.DecimalField(max_digits=5, decimal_places=2)
     phone = PhoneNumberField()
+    address = models.CharField(max_length=60)
     specialty = models.CharField(max_length=60)
+    facebook_url = models.URLField(null=True, blank=True)
+    twitter_url = models.URLField(null=True, blank=True)
+    linkedin_url = models.URLField(null=True, blank=True)
+    website_url = models.URLField(null=True, blank=True)
 
     def __str__(self) -> str:
         return self.full_name
